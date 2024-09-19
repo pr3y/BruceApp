@@ -1,0 +1,33 @@
+name: Kotlin Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'temurin'  # Use 'zulu' or 'adopt' if preferred
+
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 30
+        build-tools: 30.0.3
+
+    - name: Build with Gradle
+      run: ./gradlew clean build
+
