@@ -28,6 +28,10 @@ jobs:
         api-level: 30
         build-tools: 30.0.3
 
+    - name: Accept Android SDK licenses
+      run: |
+        yes | sdkmanager --licenses
+
     - name: Build with Gradle
       run: ./gradlew clean build
 
