@@ -28,6 +28,10 @@ jobs:
         api-level: 30
         build-tools: 30.0.3
 
+    - name: Install Android SDK packages
+      run: |
+        yes | sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
     - name: Accept Android SDK licenses
       run: |
         yes | sdkmanager --licenses
