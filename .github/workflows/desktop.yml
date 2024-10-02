@@ -1,4 +1,4 @@
-name: Build Desktop App
+name: Build Bruce Desktop App
 
 on:
   push:
@@ -23,6 +23,8 @@ jobs:
       - name: Clean and Build
         run: ./gradlew clean build
 
-      - name: Run tests
-        run: ./gradlew test
-
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: binaries
+          path: build/libs/*.jar
