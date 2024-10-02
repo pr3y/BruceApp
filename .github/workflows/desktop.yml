@@ -1,0 +1,28 @@
+name: Build Desktop App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Clean and Build
+        run: ./gradlew clean build
+
+      - name: Run tests
+        run: ./gradlew test
+
