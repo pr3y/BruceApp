@@ -80,6 +80,9 @@ android {
         debugImplementation(compose.uiTooling)
     }
 }
+dependencies {
+    implementation(libs.androidx.navigation.compose)
+}
 
 compose.desktop {
     application {
