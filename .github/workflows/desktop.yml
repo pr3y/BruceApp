@@ -1,4 +1,4 @@
-name: Build Bruce Desktop App
+name: Bruce Desktop App
 
 on:
   push:
@@ -22,6 +22,15 @@ jobs:
 
       - name: Clean and Build
         run: ./gradlew clean build
+
+      - name: Check path
+        run: ls -alh
+
+      - name: Find Builds
+        run: find . -name "*jar"
+
+      - name: Find executables
+        run: find . -perm -700 -type f
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

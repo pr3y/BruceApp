@@ -1,4 +1,4 @@
-name: Kotlin Bruce iOS Build
+name: Bruce iOS Build
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        brew install cocoapods
+        brew reinstall cocoapods
         pod install
 
     - name: Build with Gradle
