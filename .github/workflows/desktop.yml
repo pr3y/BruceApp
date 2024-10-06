@@ -23,17 +23,8 @@ jobs:
       - name: Clean and Build
         run: ./gradlew clean build
 
-      - name: Check path
-        run: ls -alh
-
-      - name: Find Builds
-        run: find . -name "*jar"
-
-      - name: Find executables
-        run: find . -perm -700 -type f
-
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: binaries
-          path: build/libs/*.jar
+          path: shared/build/intermediates/full_jar/release/createFullJarRelease/*.jar

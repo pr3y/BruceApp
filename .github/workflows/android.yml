@@ -39,15 +39,9 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean assembleRelease
 
-    - name: Check Path
-      run: ls -alh
-
-    - name: Find all APKs
-      run: find . -name "*apk" 2>/dev/null
-
     - name: Upload APK
       uses: actions/upload-artifact@v3
       with:
         name: android-apk
-        path: app/build/outputs/apk/release/*.apk
+        path: composeApp/build/outputs/apk/release/*.apk
 
