@@ -22,6 +22,13 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
+    - name: Create Podfile
+      run: |
+        echo "platform :ios, '14.0'" > Podfile
+        echo "target 'BruceApp' do" >> Podfile
+        echo "  use_frameworks!" >> Podfile
+        echo "end" >> Podfile
+
     - name: Install dependencies
       run: |
         brew reinstall cocoapods
