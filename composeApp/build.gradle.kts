@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(projects.shared)
+            implementation("com.fazecast:jSerialComm:2.9.2")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
