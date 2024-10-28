@@ -27,4 +27,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: binaries
-          path: shared/build/intermediates/full_jar/release/createFullJarRelease/*.jar
+          path: ./composeApp/build/libs/composeApp-desktop.jar
