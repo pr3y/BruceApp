@@ -16,12 +16,12 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     jvm("desktop")
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -40,6 +40,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation("com.fazecast:jSerialComm:2.9.2")
         }
     }
 }
@@ -93,5 +94,7 @@ compose.desktop {
             packageName = "bruce.app"
             packageVersion = "1.0.0"
         }
+
+
     }
 }
