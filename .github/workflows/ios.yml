@@ -24,9 +24,10 @@ jobs:
 
     - name: Create Podfile
       run: |
-        echo "platform :ios, '14.0'" > Podfile
         pod setup --verbose
         pod init
+        cat Podfile
+        echo "platform :ios, '14.0'" > Podfile
         echo "target 'BruceApp' do" >> Podfile
         echo "  use_frameworks!" >> Podfile
         echo "end" >> Podfile
