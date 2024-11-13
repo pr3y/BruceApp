@@ -22,20 +22,19 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: Create Podfile
+    - name: Use gradle to setup xcode files
+      run: ./gradlew :iosApp:assembleDebug
+
+    - name: Set up CocoaPods
       run: |
-        pod setup --verbose
+        cd iosApp
         pod init
-        cat Podfile
         echo "platform :ios, '14.0'" > Podfile
-        echo "target 'BruceApp' do" >> Podfile
+        echo "target 'iosApp' do" >> Podfile
         echo "  use_frameworks!" >> Podfile
         echo "end" >> Podfile
-        pod install
-
-    - name: Install dependencies
-      run: |
-        brew reinstall cocoapods
+        pod install --repo-update
 
     - name: Build with Gradle
       run: ./gradlew clean build
+
