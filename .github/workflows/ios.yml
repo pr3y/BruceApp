@@ -28,11 +28,13 @@ jobs:
         echo "target 'BruceApp' do" >> Podfile
         echo "  use_frameworks!" >> Podfile
         echo "end" >> Podfile
+        pod setup --verbose
+        pod init
+        pod install
 
     - name: Install dependencies
       run: |
         brew reinstall cocoapods
-        pod install
 
     - name: Build with Gradle
       run: ./gradlew clean build
