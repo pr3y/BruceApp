@@ -9,6 +9,11 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
+repositories {
+    google()
+    mavenCentral()
+}
+
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -25,11 +30,15 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation("androidx.compose.material:material-icons-extended:1.5.4")
+            implementation("androidx.compose.material3:material3:1.1.2")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
+            implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -61,16 +70,27 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("bruceapp.keystore")
+            storePassword = "bruceapp"
+            keyAlias = "bruceapp"
+            keyPassword = "bruceapp"
         }
     }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+        }
+        getByName("debug") {
+            isDebuggable = true
+            applicationIdSuffix = ".debug"
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

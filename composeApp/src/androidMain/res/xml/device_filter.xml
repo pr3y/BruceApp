@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ESP32-S2/S3 Native USB -->
+    <usb-device vendor-id="32902" /> <!-- 0x8087 ESP32-S2/S3 -->
+    <usb-device vendor-id="12346" /> <!-- 0x303A ESP32 -->
+    
+    <!-- Common USB-Serial chips -->
+    <usb-device vendor-id="6790" /> <!-- 0x1a86 CH340 -->
+    <usb-device vendor-id="4292" /> <!-- 0x10c4 CP210x -->
+    <usb-device vendor-id="1027" /> <!-- 0x0403 FTDI -->
+    <usb-device vendor-id="1659" /> <!-- 0x067b Prolific -->
+    
+    <!-- Generic USB CDC devices -->
+    <usb-device class="2" />  <!-- CDC -->
+    <usb-device class="10" /> <!-- CDC Data -->
+    <usb-device class="255" /> <!-- Vendor Specific -->
+    
+    <!-- Catch-all for USB devices -->
+    <usb-device />
+</resources> 
