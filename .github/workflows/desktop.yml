@@ -12,19 +12,21 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Clean and Build
-        run: ./gradlew clean build
+      - name: Build native distributions
+        run: ./gradlew clean package
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: binaries
-          path: ./composeApp/build/libs/composeApp-desktop.jar
+          name: desktop-binaries
+          path: |
+            composeApp/build/compose/binaries/main/app/bruce.app/bin/*
+          if-no-files-found: error

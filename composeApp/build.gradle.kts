@@ -111,11 +111,33 @@ compose.desktop {
         mainClass = "bruce.app.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            // Explicitly request AppImage (Linux), Exe (Windows), and Dmg (macOS)
+            targetFormats(
+                TargetFormat.AppImage,  // Linux portable executable
+                TargetFormat.Exe,      // Windows standalone .exe
+                TargetFormat.Dmg       // macOS .app bundle inside .dmg
+            )
+
             packageName = "bruce.app"
             packageVersion = "1.0.0"
+
+            // Linux-specific settings (AppImage)
+            linux {
+                appCategory = "Utility"
+                menuGroup = "bruce.app"
+            }
+
+            // Windows-specific settings (.exe)
+            windows {
+                menuGroup = "bruce.app"
+                upgradeUuid = "your-random-uuid" // Generate via `uuidgen`
+            }
+
+            // macOS-specific settings (.dmg)
+            macOS {
+                bundleID = "com.bruce.app"
+                dockName = "Bruce App"
+            }
         }
-
-
     }
 }
