@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.*
@@ -160,6 +161,33 @@ fun optionsScreen(onSendCommand: (String) -> Unit) {
             Text("Play Doom Song!")
         }
         Button(
+            onClick = { onSendCommand("storage list /") },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color(0xFF6200EE),
+                contentColor = Color.White
+            )
+        ) {
+            Text("List Storage")
+        }
+        Button(
+            onClick = { onSendCommand("settiings") },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color(0xFF6200EE),
+                contentColor = Color.White
+            )
+        ) {
+            Text("Device Settings")
+        }
+        Button(
+            onClick = { onSendCommand("subghz tx_from_file replay.sub") },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color(0xFF6200EE),
+                contentColor = Color.White
+            )
+        ) {
+            Text("Send RF from file")
+        }
+        Button(
             onClick = { showCustomCommandDialog = true },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(0xFF6200EE),
@@ -183,7 +211,7 @@ fun TerminalOutput(text: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(300.dp)
             .padding(8.dp)
             .background(Color(0xFF1E1E1E), RoundedCornerShape(4.dp))
             .padding(8.dp)
@@ -236,6 +264,29 @@ fun TerminalOutput(text: String) {
 }
 
 @Composable
+fun LinksDialog(
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("BruceApp v0.3") },
+        text = {
+            Column {
+                Text("Documentation:")
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("https://github.com/pr3y/BruceApp")
+                Text("https://github.com/pr3y/Bruce/wiki/Serial")
+            }
+        },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
+}
+
+@Composable
 @Preview
 fun App() {
     val darkBackgroundColor = Color(0xFF121212)
@@ -243,6 +294,7 @@ fun App() {
     val serialCommunication = remember { getSerialCommunication() }
     val firmwareUpdater = remember { getFirmwareUpdater() }
     var showSettings by remember { mutableStateOf(false) }
+    var showLinks by remember { mutableStateOf(false) }
     var selectedBaudRate by remember { mutableStateOf(9600) }
     var terminalOutput by remember { mutableStateOf("") }
     var isUpdating by remember { mutableStateOf(false) }
@@ -277,18 +329,31 @@ fun App() {
                 .fillMaxSize()
                 .background(darkBackgroundColor)
         ) {
-            // Settings button in top-right corner
-            IconButton(
-                onClick = { showSettings = true },
+            // Document and Settings buttons in top-right corner
+            Row(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(16.dp)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
-                    tint = Color.White
-                )
+                IconButton(
+                    onClick = { showLinks = true }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Description,
+                        contentDescription = "Documentation",
+                        tint = Color.White
+                    )
+                }
+                IconButton(
+                    onClick = { showSettings = true }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings",
+                        tint = Color.White
+                    )
+                }
             }
 
             Column(
@@ -370,6 +435,12 @@ fun App() {
                         terminalOutput += "Setting baud rate to $baudRate\n"
                     },
                     selectedBaudRate = selectedBaudRate
+                )
+            }
+
+            if (showLinks) {
+                LinksDialog(
+                    onDismiss = { showLinks = false }
                 )
             }
         }

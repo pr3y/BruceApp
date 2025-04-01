@@ -10,6 +10,6 @@ interface FirmwareUpdater {
     fun cancelUpdate()
     
     companion object {
-        const val FIRMWARE_URL = "http://bruce.computer/LastRelease/Bruce-m5stack-cardputer.bin"
+        const val FIRMWARE_URL = "https://bruce.computer/LastRelease/Bruce-m5stack-cardputer.bin"
     }
 } 

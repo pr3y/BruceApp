@@ -38,8 +38,9 @@ class AndroidFirmwareUpdater(private val context: Context) : FirmwareUpdater {
         const val READ_REG = 0x0A
         
         const val FLASH_SECTOR_SIZE = 4096
-        const val BOOTLOADER_FLASH_OFFSET = 0x0  // ESP32-S3 starts at 0x0
+        const val BOOTLOADER_FLASH_OFFSET = 0x0000  // ESP32-S3 starts at 0x0000
         const val FLASH_WRITE_SIZE = 0x400  // Write in 1K chunks
+        const val FLASH_ERASE_SIZE = 0x1000  // Erase in 4K chunks
         
         // Sync pattern
         val SYNC_PATTERN = byteArrayOf(
@@ -257,7 +258,52 @@ class AndroidFirmwareUpdater(private val context: Context) : FirmwareUpdater {
         buffer.putInt(ESP.FLASH_SECTOR_SIZE)
         buffer.putInt(ESP.BOOTLOADER_FLASH_OFFSET)
         
+        // First erase the flash
+        if (!eraseFlash(connection, outEndpoint, inEndpoint, size)) {
+            return false
+        }
+        
         return sendCommand(connection, outEndpoint, inEndpoint, ESP.FLASH_BEGIN, buffer.array())
+    }
+    
+    private fun eraseFlash(
+        connection: UsbDeviceConnection,
+        outEndpoint: UsbEndpoint,
+        inEndpoint: UsbEndpoint,
+        size: Int
+    ): Boolean {
+        val numSectors = (size + ESP.FLASH_ERASE_SIZE - 1) / ESP.FLASH_ERASE_SIZE
+        
+        for (sector in 0 until numSectors) {
+            val buffer = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
+            buffer.putInt(ESP.FLASH_ERASE_SIZE)
+            buffer.putInt(1)  // number of sectors to erase
+            buffer.putInt(ESP.FLASH_SECTOR_SIZE)
+            buffer.putInt(sector * ESP.FLASH_ERASE_SIZE)
+            
+            if (!sendCommand(connection, outEndpoint, inEndpoint, ESP.FLASH_BEGIN, buffer.array())) {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    private fun verifyFlash(
+        connection: UsbDeviceConnection,
+        outEndpoint: UsbEndpoint,
+        inEndpoint: UsbEndpoint,
+        data: ByteArray,
+        offset: Int
+    ): Boolean {
+        val buffer = ByteBuffer.allocate(16 + data.size).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.putInt(data.size)
+        buffer.putInt(offset / ESP.FLASH_SECTOR_SIZE)
+        buffer.putInt(offset % ESP.FLASH_SECTOR_SIZE)
+        buffer.putInt(0) // padding
+        buffer.put(data)
+        
+        return sendCommand(connection, outEndpoint, inEndpoint, ESP.FLASH_DATA, buffer.array())
     }
     
     private fun sendFlashData(

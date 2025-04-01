@@ -43,17 +43,9 @@ class DesktopFirmwareUpdater : FirmwareUpdater {
                 // Execute esptool.py commands
                 val command = listOf(
                     "python", "-m", "esptool",
-                    "--chip", "esp32s3",
                     "--port", portPath,
-                    "--baud", "460800",
-                    "--before", "default_reset",
-                    "--after", "hard_reset",
                     "write_flash",
-                    "-z",
-                    "--flash_mode", "dio",
-                    "--flash_freq", "80m",
-                    "--flash_size", "4MB",
-                    "0x0", firmwareFile.absolutePath
+                    "0x0000", firmwareFile.absolutePath
                 )
                 
                 onProgress("Executing flash command...")
