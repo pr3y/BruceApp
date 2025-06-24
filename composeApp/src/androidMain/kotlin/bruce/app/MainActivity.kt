@@ -69,6 +69,12 @@ class MainActivity : ComponentActivity() {
         Log.d(TAG, "onDestroy: Disconnecting USB")
         serialCommunication.disconnect()
     }
+
+    fun launchAndroidWebView() {
+        val context = MainActivity.instance
+        val intent = android.content.Intent(context, AndroidWebViewActivity::class.java)
+        context.startActivity(intent)
+    }
 }
 
 @Preview

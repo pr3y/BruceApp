@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import bruce.app.launchAndroidWebView
 
 @Composable
 fun TerminalWindow(
@@ -300,6 +301,7 @@ fun App() {
     var isUpdating by remember { mutableStateOf(false) }
     var showSerialCmds by remember { mutableStateOf(false) }
     var updateFirmware by remember { mutableStateOf(false) }
+    var showAndroidFirmwarePopup by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
         serialCommunication.setOutputListener { output ->
@@ -308,6 +310,10 @@ fun App() {
         onDispose {
             serialCommunication.disconnect()
         }
+    }
+
+    fun showAndroidFirmwarePopup() {
+        showAndroidFirmwarePopup = true
     }
 
     MaterialTheme(
@@ -369,25 +375,31 @@ fun App() {
                 ) {
                     Button(
                         onClick = { 
-                            if (!isUpdating) {
-                                isUpdating = true
-                                updateFirmware = true
-                                terminalOutput = "" // Clear terminal
-                                firmwareUpdater.downloadAndUpdate(
-                                    onProgress = { message ->
-                                        terminalOutput += "$message\n"
-                                    },
-                                    onError = { error ->
-                                        terminalOutput += "ERROR: $error\n"
-                                        isUpdating = false
-                                        updateFirmware = false
-                                    },
-                                    onSuccess = {
-                                        terminalOutput += "Firmware update completed successfully!\n"
-                                        isUpdating = false
-                                        updateFirmware = false
-                                    }
-                                )
+                            if (getPlatform().name.startsWith("Android")) {
+                                // Show popup for Android
+                                showAndroidFirmwarePopup()
+                            } else {
+                                // Original firmware update logic for other platforms
+                                if (!isUpdating) {
+                                    isUpdating = true
+                                    updateFirmware = true
+                                    terminalOutput = "" // Clear terminal
+                                    firmwareUpdater.downloadAndUpdate(
+                                        onProgress = { message ->
+                                            terminalOutput += "$message\n"
+                                        },
+                                        onError = { error ->
+                                            terminalOutput += "ERROR: $error\n"
+                                            isUpdating = false
+                                            updateFirmware = false
+                                        },
+                                        onSuccess = {
+                                            terminalOutput += "Firmware update completed successfully!\n"
+                                            isUpdating = false
+                                            updateFirmware = false
+                                        }
+                                    )
+                                }
                             }
                         },
                         enabled = !isUpdating,
@@ -400,6 +412,20 @@ fun App() {
                             Text("Updating...")
                         } else {
                             Text("Update Firmware")
+                        }
+                    }
+                    if (getPlatform().name.startsWith("Android")) {
+                        Button(
+                            onClick = {
+                                // Launch Android WebView Activity
+                                bruce.app.launchAndroidWebView()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = purpleColor,
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Text("Bruce WebView")
                         }
                     }
                     Button(
@@ -441,6 +467,25 @@ fun App() {
             if (showLinks) {
                 LinksDialog(
                     onDismiss = { showLinks = false }
+                )
+            }
+
+            if (showAndroidFirmwarePopup) {
+                AlertDialog(
+                    onDismissRequest = { showAndroidFirmwarePopup = false },
+                    title = { Text("Firmware Update") },
+                    text = { Text("Firmware update function on android will be available in the next version of BruceApp.") },
+                    confirmButton = {
+                        Button(
+                            onClick = { showAndroidFirmwarePopup = false },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = purpleColor,
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Text("OK")
+                        }
+                    }
                 )
             }
         }
