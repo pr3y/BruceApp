@@ -1,8 +1,20 @@
 # Bruce App
 
+# Bruce Multi-platform App (Android/Desktop) for interacting with Bruce Firmware
+
 ## Building
 ```
 ./gradlew clean build
+```
+
+## Running on Desktop
+```
+./gradlew run
+```
+
+## Building APK
+```
+./gradlew build assembleRelease
 ```
 
 This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
