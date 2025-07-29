@@ -1,11 +1,11 @@
-name: Release APK build
+name: Release BruceApp Build
 
 on:
   release:
     types: [created]
 
 jobs:
-  build:
+  build-and-upload:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,19 +25,30 @@ jobs:
 
     - name: Accept licenses
       run: |
-        yes | sdkmanager --licenses
+        yes | sdkmanager --licenses || true
 
-    - name: Build release
+    - name: Build release APK
       run: |
         ./gradlew clean assembleRelease
-        find . -name '*.apk' -exec zip -d {} 'META-INF/*.SF' 'META-INF/*.RSA' 'META-INF/*.DSA' \;
 
-    - name: Upload APK to Release
+    - name: Find APK
+      id: find-apk
+      run: |
+        APK_PATH=$(find composeApp/build/outputs/apk/release -name '*.apk' | head -1)
+        if [ -z "$APK_PATH" ]; then
+          echo "ERROR: No APK found!"
+          find . -name '*.apk' || true
+          exit 1
+        fi
+        echo "APK_PATH=$APK_PATH" >> $GITHUB_OUTPUT
+        echo "Using APK: $APK_PATH"
+
+    - name: Upload to Release
       uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: composeApp/build/outputs/apk/release/*.apk
-        asset_name: app-release.apk
-        asset_content_type: application/vnd.android.package-archive
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ${{ steps.find-apk.outputs.APK_PATH }}
+        asset_name: app-release.apk
+        asset_content_type: application/vnd.android.package-archive
