@@ -4,6 +4,9 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: write
+
 jobs:
   build-and-upload:
     runs-on: ubuntu-latest
@@ -31,24 +34,23 @@ jobs:
       run: |
         ./gradlew clean assembleRelease
 
-    - name: Find APK
-      id: find-apk
+    - name: Verify APK exists
+      id: verify-apk
       run: |
-        APK_PATH=$(find composeApp/build/outputs/apk/release -name '*.apk' | head -1)
-        if [ -z "$APK_PATH" ]; then
-          echo "ERROR: No APK found!"
+        APK_PATH="composeApp/build/outputs/apk/release/composeApp-release.apk"
+        if [ ! -f "$APK_PATH" ]; then
+          echo "ERROR: APK not found at $APK_PATH"
           find . -name '*.apk' || true
           exit 1
         fi
-        echo "APK_PATH=$APK_PATH" >> $GITHUB_OUTPUT
-        echo "Using APK: $APK_PATH"
+        echo "APK exists at: $APK_PATH"
+        echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
 
     - name: Upload to Release
-      uses: actions/upload-release-asset@v1
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ${{ steps.verify-apk.outputs.apk_path }}
+        draft: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ${{ steps.find-apk.outputs.APK_PATH }}
-        asset_name: app-release.apk
-        asset_content_type: application/vnd.android.package-archive
