@@ -1,6 +1,8 @@
-# Bruce App
+# :shark: Bruce App
 
 # Bruce Multi-platform App (Android/Desktop) for interacting with Bruce Firmware
+
+![Bruce App](./assets/bruce_app_show.gif)
 
 ## Building
 ```

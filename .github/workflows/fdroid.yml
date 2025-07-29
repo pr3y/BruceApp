@@ -1,0 +1,42 @@
+name: F-Droid Build
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 34
+        build-tools: 34.0.0
+
+    - name: Accept licenses
+      run: |
+        yes | sdkmanager --licenses
+
+    - name: Build release
+      run: |
+        ./gradlew clean assembleRelease
+        find . -name '*.apk' -exec zip -d {} 'META-INF/*.SF' 'META-INF/*.RSA' 'META-INF/*.DSA' \;
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release
+        path: |
+          composeApp/build/outputs/apk/release/*.apk
+          fdroid/metadata.yml
