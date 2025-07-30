@@ -119,7 +119,7 @@ compose.desktop {
             )
 
             packageName = "bruce.app"
-            packageVersion = "1.1"
+            packageVersion = "1.1.0"
 
             // Linux-specific settings (AppImage)
             linux {
