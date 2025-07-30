@@ -68,7 +68,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "0.3"
+        versionName = "1.1"
     }
 
     signingConfigs {
@@ -119,7 +119,7 @@ compose.desktop {
             )
 
             packageName = "bruce.app"
-            packageVersion = "0.3"
+            packageVersion = "1.1"
 
             // Linux-specific settings (AppImage)
             linux {
