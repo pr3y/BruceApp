@@ -59,4 +59,3 @@ outTmp/
 kotlin-ide/
 .kotlin/
 .teamcity/
-*.keystore
