@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    kotlin("plugin.serialization") version "2.2.0"
 }
 
 repositories {
@@ -32,6 +33,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation("androidx.compose.material:material-icons-extended:1.5.4")
             implementation("androidx.compose.material3:material3:1.1.2")
+            implementation("androidx.preference:preference:1.2.1")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -46,6 +48,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(projects.shared)
             implementation("com.fazecast:jSerialComm:2.9.2")
+            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.0-beta04")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -57,7 +61,7 @@ kotlin {
 
 android {
     namespace = "bruce.app"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = 35
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")

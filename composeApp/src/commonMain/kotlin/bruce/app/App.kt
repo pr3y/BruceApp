@@ -22,8 +22,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import bruce.app.launchAndroidWebView
+import kotlinx.coroutines.delay
 
 @Composable
 fun TerminalWindow(
@@ -290,6 +295,105 @@ fun LinksDialog(
 @Composable
 @Preview
 fun App() {
+    val navController = rememberNavController()
+    val bleConnection: BLEConnection = initBLEConnection()
+    val deviceAddress = remember { mutableStateOf("") }
+    val store = KvStore()
+    val scanResult = remember { mutableStateOf(listOf(BLEDevice("", ""))) }
+    val res = store.read("ble_device")
+    val initialPage = remember { mutableStateOf(Pages.InitialSetup) }
+    val deviceReady = remember { mutableStateOf(false) }
+
+    if(!deviceReady.value) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = {},
+            properties = DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false
+            ),
+            title = null,
+            confirmButton = {},
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    androidx.compose.material3.CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        strokeWidth = 4.dp,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    androidx.compose.material3.Text(
+                        "Scanning for saved Bruce device...",
+                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+                    )
+                    Button({
+                        deviceReady.value = true
+                        navController.navigate(Pages.InitialSetup)
+                    }) {
+                        androidx.compose.material3.Text("Cancel")
+                    }
+                }
+            }
+        )
+    }
+
+
+    if(res != null) {
+        println("Device found in store")
+
+        initialPage.value = Pages.NewMainPage
+        deviceAddress.value = res
+        bleConnection.Setup()
+
+        LaunchedEffect(Unit) {
+            while(scanResult.value.none { it.address == res } || deviceReady.value) {
+                scanResult.value = bleConnection.getScanResult()
+                delay(300)
+            }
+            deviceReady.value = true
+        }
+
+        if(deviceReady.value) {
+            ConnectToBLEDevice(bleConnection, navController, deviceAddress.value)
+            LaunchedEffect(Unit) {
+                while(!bleConnection.isBLEConnected()) {
+                    delay(300)
+                }
+                navController.navigate(Pages.NewMainPage)
+            }
+        }
+    }
+
+    NavHost(
+        navController = navController,
+        startDestination = Pages.InitialSetup,
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        composable(route = Pages.InitialSetup) {
+            InitialSetup(navController, bleConnection)
+        }
+
+        composable(route = Pages.MainPage) {
+            MainLayout()
+        }
+
+        composable(route = Pages.BLEDevicesList) {
+            BLEDevicesView(navController, bleConnection)
+        }
+
+        composable(route = Pages.NewMainPage) {
+            newMainPage(navController, bleConnection)
+        }
+    }
+}
+
+@Composable
+@Preview
+fun MainLayout() {
     val darkBackgroundColor = Color(0xFF121212)
     val purpleColor = Color(0xFF6200EE)
     val serialCommunication = remember { getSerialCommunication() }
