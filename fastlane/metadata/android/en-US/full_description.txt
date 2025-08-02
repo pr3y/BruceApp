@@ -1,0 +1,1 @@
+<p><i>Bruce</i> is a Companion App for interacting with Bruce Firmware. It lets you send commands to your ESP32 device running <a href='https://bruce.computer/' target='_blank' rel='nofollow noopener'>Bruce Firmware</a>, mirror its display, and more.</p>
