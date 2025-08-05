@@ -39,6 +39,8 @@ expect class BLEConnection {
     fun isBLEConnected(): Boolean
 
     suspend fun queryDevice(service: String, char: String): ByteArray
+
+    fun writeToDevice(service: String, char: String, data: ByteArray)
 }
 
 data class BLEDevice (
@@ -49,11 +51,11 @@ data class BLEDevice (
 expect fun initBLEConnection(): BLEConnection
 
 @Composable
-fun ConnectToBLEDevice(bleConnection: BLEConnection, navController: NavController, deviceAddress: String) {
+fun ConnectToBLEDevice(bleConnection: BLEConnection, navController: NavController, deviceAddress: String, showDialog: Boolean = true) {
     val isConnected = remember { mutableStateOf(false) }
 
     if(deviceAddress != "") {
-        if(!isConnected.value) {
+        if(!isConnected.value && showDialog) {
             AlertDialog(
                 onDismissRequest = {},
                 properties = DialogProperties(dismissOnBackPress = false,
@@ -89,10 +91,5 @@ fun ConnectToBLEDevice(bleConnection: BLEConnection, navController: NavControlle
             storeDevice.value = true
             navController.navigate(Pages.NewMainPage)
         }
-
-      /*  if(storeDevice.value) {
-            store.write("ble_device", deviceAddress.value)
-        } */
-
     }
 }

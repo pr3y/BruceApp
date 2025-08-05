@@ -1,6 +1,5 @@
 package bruce.app
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -27,7 +26,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import bruce.app.launchAndroidWebView
 import kotlinx.coroutines.delay
 
 @Composable
@@ -356,7 +354,7 @@ fun App() {
         }
 
         if(deviceReady.value) {
-            ConnectToBLEDevice(bleConnection, navController, deviceAddress.value)
+            ConnectToBLEDevice(bleConnection, navController, deviceAddress.value, false)
             LaunchedEffect(Unit) {
                 while(!bleConnection.isBLEConnected()) {
                     delay(300)
@@ -386,7 +384,7 @@ fun App() {
         }
 
         composable(route = Pages.NewMainPage) {
-            newMainPage(navController, bleConnection)
+            NewMainPage(navController, bleConnection)
         }
     }
 }

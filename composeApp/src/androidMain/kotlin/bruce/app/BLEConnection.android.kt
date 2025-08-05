@@ -231,6 +231,21 @@ actual class BLEConnection {
         }
         return readData
     }
+
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    actual fun writeToDevice(service: String, char: String, data: ByteArray) {
+        gattDevice.services.forEach  {
+            val characteristic = it.getCharacteristic(UUID.fromString(char))
+            if(characteristic != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    gattDevice.writeCharacteristic(characteristic, data, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
+                } else {    // For old device
+                    characteristic.value = data
+                    gattDevice.writeCharacteristic(characteristic)
+                }
+            }
+        }
+    }
 }
 
 actual fun initBLEConnection(): BLEConnection {

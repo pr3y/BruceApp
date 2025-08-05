@@ -2,9 +2,13 @@ package bruce.app
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,8 +21,10 @@ import androidx.navigation.NavController
 import kotlinx.serialization.json.Json
 
 @Composable
-fun newMainPage(navController: NavController, bleConnection: BLEConnection) {
+fun NewMainPage(navController: NavController, bleConnection: BLEConnection) {
     val deviceInfo = remember { mutableStateOf(DeviceInfo("", "", "", "", "", "")) }
+    val shutdownPayload = byteArrayOf(0x00)
+    val rebootPayload = byteArrayOf(0x01)
 
     MaterialTheme(
         colorScheme = Style.scheme
@@ -34,6 +40,19 @@ fun newMainPage(navController: NavController, bleConnection: BLEConnection) {
                 Text("SDK: ${deviceInfo.value.sdk}")
                 Text("MAC Address: ${deviceInfo.value.mac}")
                 Text("WiFi: ${deviceInfo.value.wifi_ip}")
+                Row {
+                    Button({
+                        bleConnection.writeToDevice("0134b0a9-d14f-40b3-a595-4056062a33bd", "aa2095ec-e710-4462-b9af-93a133410a29", shutdownPayload)
+                    }) {
+                        Text("Shutdown")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button({
+                        bleConnection.writeToDevice("0134b0a9-d14f-40b3-a595-4056062a33bd", "aa2095ec-e710-4462-b9af-93a133410a29", rebootPayload)
+                    }) {
+                        Text("Reboot")
+                    }
+                }
             }
         }
     }
